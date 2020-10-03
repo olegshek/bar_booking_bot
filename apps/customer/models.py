@@ -27,7 +27,7 @@ class Customer(models.Model):
         verbose_name_plural = _('Customers')
 
     def __str__(self):
-        return self.full_name
+        return self.full_name if self.full_name else str(self.id)
 
 
 class BlockedUser(models.Model):
@@ -50,6 +50,8 @@ class BookRequest(models.Model):
 
     class Meta:
         ordering = ('-created_at', )
+        verbose_name = _('Book request')
+        verbose_name_plural = _('Book requests')
 
     def __str__(self):
         return str(self.book_id)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-03 06:50+0000\n"
+"POT-Creation-Date: 2020-10-03 14:33+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,6 +56,7 @@ msgstr ""
 #: apps/bot/models.py:41
 msgid "Title"
 msgstr "Заголовок"
+
 #: apps/bot/models.py:45
 msgid "Message"
 msgstr "Сообщение"
@@ -133,11 +134,19 @@ msgstr "Дата бронирование"
 msgid "People quantity"
 msgstr "Количество людей"
 
-#: config/settings.py:138
+#: apps/customer/models.py:53
+msgid "Book request"
+msgstr "Запрос на бронирование"
+
+#: apps/customer/models.py:54
+msgid "Book requests"
+msgstr "Запросы на бронирование"
+
+#: config/settings.py:139
 msgid "Russian"
 msgstr ""
 
-#: config/settings.py:139
+#: config/settings.py:140
 msgid "English"
 msgstr ""
 
