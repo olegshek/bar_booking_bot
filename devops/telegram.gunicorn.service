@@ -5,17 +5,17 @@ After=network.target
 [Service]
 User=bar
 Group=www-data
-WorkingDirectory=/home/bar/bar_registration
-EnvironmentFile=/home/bar/bar_registration/.env
+WorkingDirectory=/home/bar/bar_booking_bot
+EnvironmentFile=/home/bar/bar_booking_bot/.env
 ExecStart=/home/bar/bar_booking_bot/venv/bin/gunicorn \
   --worker-class aiohttp.GunicornWebWorker
   --log-level=debug \
   --name "telegram_bar_booking_gunicorn" \
-  --error-logfile /home/bar/bar_registration/logs/telegram-gunicorn-error.log \
-  --access-logfile /home/bar/bar_registration/logs/telegram-gunicorn-access.log \
+  --error-logfile /home/bar/bar_booking_bot/logs/telegram-gunicorn-error.log \
+  --access-logfile /home/bar/bar_booking_bot/logs/telegram-gunicorn-access.log \
   --capture-output \
   --workers 3 \
-  --bind=unix:/home/bar/bar_registration/run/telegram.sock \
+  --bind=unix:/home/bar/bar_booking_bot/run/telegram.sock \
    config.telegram_wsgi:web_app
 
 [Install]
