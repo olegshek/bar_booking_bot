@@ -16,7 +16,7 @@ ExecStart=/home/bar/bar_booking_bot/venv/bin/gunicorn \
   --capture-output \
   --workers 3 \
   --bind=unix:/home/bar/bar_booking_bot/run/telegram.sock \
-   config.telegram_wsgi:web_app
+  config.telegram_wsgi:web_app
 
 [Install]
 WantedBy=multi-user.target
