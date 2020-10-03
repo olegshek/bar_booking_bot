@@ -1,0 +1,98 @@
+[
+  {
+    "model": "bot.message",
+    "pk": 1,
+    "fields": {
+      "title": "greeting",
+      "text": "Добро пожаловать"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 2,
+    "fields": {
+      "title": "phone_number",
+      "text": "Отправьте ваш номер телефона воспользовавшись кнопкой ниже"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 3,
+    "fields": {
+      "title": "age",
+      "text": "Укажите ваш возраст"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 4,
+    "fields": {
+      "title": "gender",
+      "text": "Укажите ваш пол воспользовавшись кнопками ниже"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 6,
+    "fields": {
+      "title": "related_people",
+      "text": "Напишите кого вы знаете в нашем баре"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 7,
+    "fields": {
+      "title": "full_name",
+      "text": "Укажите ваше Ф.И.О"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 8,
+    "fields": {
+      "title": "main_menu",
+      "text": "Вы находитесь в главном меню"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 9,
+    "fields": {
+      "title": "people_quantity",
+      "text": "Укажите количество человек"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 10,
+    "fields": {
+      "title": "book_date",
+      "text": "Укажите дату бронирования"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 11,
+    "fields": {
+      "title": "successful_booking",
+      "text": "Ваш запрос принят. \nВаш ID: %(book_id)s"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 12,
+    "fields": {
+      "title": "already_booked",
+      "text": "Вы уже забронировали место. \nВаш ID: %(book_id)s"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 13,
+    "fields": {
+      "title": "is_blocked",
+      "text": "Отказано в доступе"
+    }
+  }
+]

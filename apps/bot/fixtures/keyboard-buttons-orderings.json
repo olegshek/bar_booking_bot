@@ -1,0 +1,20 @@
+[
+  {
+    "model": "bot.keyboardbuttonsordering",
+    "pk": 1,
+    "fields": {
+      "keyboard": 1,
+      "button": 1,
+      "ordering": 0
+    }
+  },
+  {
+    "model": "bot.keyboardbuttonsordering",
+    "pk": 2,
+    "fields": {
+      "keyboard": 2,
+      "button": 3,
+      "ordering": 0
+    }
+  }
+]

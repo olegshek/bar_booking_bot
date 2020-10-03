@@ -1,0 +1,21 @@
+[Unit]
+Description=Bar Gunicorn Service
+After=network.target
+
+[Service]
+User=relay
+Group=www-data
+WorkingDirectory=/home/bar/bar_registration
+Environment=PYTHONUNBUFFERED=TRUE
+ExecStart=/home/bar/bar_registration/venv/bin/gunicorn \
+  --log-level=debug \
+  --name "bar_booking_gunicorn" \
+  --error-logfile /home/bar/bar_registration/logs/gunicorn-error.log \
+  --access-logfile /home/bar/bar_registration/logs/gunicorn-access.log \
+  --capture-output \
+  --workers 3 \
+  --bind=unix:/home/bar/bar_registration/run/relay.sock \
+   config.wsgi:application
+
+[Install]
+WantedBy=multi-user.target

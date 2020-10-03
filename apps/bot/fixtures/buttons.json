@@ -1,0 +1,26 @@
+[
+  {
+    "model": "bot.button",
+    "pk": 1,
+    "fields": {
+      "name": "phone_number",
+      "text": "Отправить мой номер телефона"
+    }
+  },
+  {
+    "model": "bot.button",
+    "pk": 2,
+    "fields": {
+      "name": "back",
+      "text": "Назад"
+    }
+  },
+  {
+    "model": "bot.button",
+    "pk": 3,
+    "fields": {
+      "name": "book",
+      "text": "Забронировать"
+    }
+  }
+]
