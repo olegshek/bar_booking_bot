@@ -8,7 +8,7 @@ Group=www-data
 WorkingDirectory=/home/bar/bar_booking_bot
 EnvironmentFile=/home/bar/bar_booking_bot/.env
 ExecStart=/home/bar/bar_booking_bot/venv/bin/gunicorn \
-  --worker-class aiohttp.GunicornWebWorker
+  --worker-class aiohttp.GunicornWebWorker \
   --log-level=debug \
   --name "telegram_bar_booking_gunicorn" \
   --error-logfile /home/bar/bar_booking_bot/logs/telegram-gunicorn-error.log \

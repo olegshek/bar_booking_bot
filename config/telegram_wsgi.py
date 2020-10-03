@@ -1,6 +1,12 @@
 import asyncio
+import os
 
 from aiogram.dispatcher.webhook import get_new_configured_app
+
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+
+
 from django.conf import settings
 
 from apps.bot import bot, dispatcher
@@ -29,3 +35,6 @@ async def web_app():
     app.on_startup.append(on_startup)
     app.on_shutdown.append(on_shutdown)
     return app
+
+
+app = asyncio.get_event_loop().run_until_complete(web_app())
