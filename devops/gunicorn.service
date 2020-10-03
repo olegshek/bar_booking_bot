@@ -3,7 +3,7 @@ Description=Bar Gunicorn Service
 After=network.target
 
 [Service]
-User=relay
+User=bar
 Group=www-data
 WorkingDirectory=/home/bar/bar_registration
 Environment=PYTHONUNBUFFERED=TRUE
