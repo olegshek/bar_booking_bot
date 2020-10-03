@@ -9,7 +9,7 @@ WorkingDirectory=/home/bar/bar_registration
 EnvironmentFile=/home/bar/bar_registration/.env
 ExecStart=/home/bar/bar_registration/venv/bin/gunicorn \
   --worker-class aiohttp.GunicornWebWorker
-  --log-level='INFO' \
+  --log-level INFO \
   --name "telegram_bar_booking_gunicorn" \
   --error-logfile /home/bar/bar_registration/logs/telegram-gunicorn-error.log \
   --access-logfile /home/bar/bar_registration/logs/telegram-gunicorn-access.log \
