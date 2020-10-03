@@ -46,7 +46,7 @@ class BookRequest(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='book_requests', verbose_name=_('Customer'))
     date = models.DateField(null=True, verbose_name=_('Date'))
     people_quantity = models.IntegerField(null=True, verbose_name=_('People quantity'))
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(default=timezone.now, verbose_name=_('Created at'))
 
     class Meta:
         ordering = ('-created_at', )
