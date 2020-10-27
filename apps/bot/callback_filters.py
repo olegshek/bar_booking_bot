@@ -1,12 +1,22 @@
 from apps.bot.tortoise_models import Button
+from apps.customer.tortoise_models import Customer
 
 
 async def keyboard_back(message):
-    return message.text == (await Button.get(name='back')).text
+    return message.text in [getattr(await Button.get(name='back'), f'text_{locale}') for locale in ['en', 'ru']]
+
+
+async def inline_back(query):
+    return query.data == 'back'
 
 
 async def message_is_not_start(message):
-    return message.text not in ['/start', '/stop', (await Button.get(name='back')).text]
+    locale = (await Customer.get(id=message.from_user.id)).language
+    return message.text not in ['/start', '/stop', getattr(await Button.get(name='back'), f'text_{locale}')]
+
+
+async def data_is_digit(query):
+    return query.data.isdigit()
 
 
 async def calendar_selection_filter(query):
@@ -15,3 +25,11 @@ async def calendar_selection_filter(query):
 
 async def date_selection(query):
     return 'DAY' in query.data
+
+
+async def time_processing(query):
+    return 'plus' in query.data or 'minus' in query.data
+
+
+async def accept_time(query):
+    return 'accept' in query.data or 'certain_time' in query.data

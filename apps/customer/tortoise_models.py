@@ -1,4 +1,5 @@
 import random
+from enum import Enum
 
 from django.utils import timezone
 from tortoise import models, fields
@@ -13,13 +14,18 @@ def _generate_book_id():
 
 class Gender(models.Model):
     name = fields.CharField(max_length=9)
-    name_ru = fields.CharField(max_length=10)
+    text_ru = fields.CharField(max_length=10)
+    text_en = fields.CharField(max_length=10)
 
     class Meta:
         table = f'{app_name}_gender'
 
 
 class Customer(models.Model):
+    class Languages(str, Enum):
+        RU = 'ru'
+        UZ = 'uz'
+
     id = fields.IntField(pk=True)
     username = fields.CharField(max_length=20, blank=True, null=True)
     full_name = fields.CharField(max_length=200, null=True, blank=True)
@@ -28,6 +34,8 @@ class Customer(models.Model):
     gender = fields.ForeignKeyField('customer.Gender', related_name='customers', on_delete=SET_NULL, null=True)
     related_people = fields.TextField(null=True)
     is_blocked = fields.BooleanField(default=False)
+
+    language = fields.CharField(max_length=2, choices=Languages, null=True)
 
     class Meta:
         table = f'{app_name}_customer'
@@ -43,8 +51,10 @@ class BlockedUser(models.Model):
 class BookRequest(models.Model):
     book_id = fields.IntField(default=_generate_book_id)
     customer = fields.ForeignKeyField('customer.Customer', on_delete=CASCADE, related_name='book_requests')
-    date = fields.DateField(null=True)
+    datetime = fields.DatetimeField(null=True)
     people_quantity = fields.IntField(null=True)
+
+    confirmed_at = fields.DatetimeField(null=True)
     created_at = fields.DatetimeField(default=timezone.now)
 
     class Meta:

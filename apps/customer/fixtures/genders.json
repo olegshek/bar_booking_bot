@@ -1,18 +1,1 @@
-[
-  {
-    "model": "customer.gender",
-    "pk": 1,
-    "fields": {
-      "name": "Male",
-      "name_ru": "Мужской"
-    }
-  },
-  {
-    "model": "customer.gender",
-    "pk": 2,
-    "fields": {
-      "name": "Female",
-      "name_ru": "Женский"
-    }
-  }
-]
+[{"model": "customer.gender", "pk": 1, "fields": {"name": "Male", "text": "Мужской", "text_ru": "Мужской", "text_en": null}}, {"model": "customer.gender", "pk": 2, "fields": {"name": "Female", "text": "Женский", "text_ru": "Женский", "text_en": null}}]

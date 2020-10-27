@@ -56,10 +56,13 @@ class BookRequestAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
 
-    list_display = ('book_id', 'customer', 'is_active', 'date', 'people_quantity', 'created_at')
-    readonly_fields = ('book_id', 'customer', 'is_active', 'date', 'people_quantity', 'created_at')
+    def get_queryset(self, request):
+        return super(BookRequestAdmin, self).get_queryset(request).filter(confirmed_at__isnull=False)
+
+    list_display = ('book_id', 'customer', 'is_active', 'datetime', 'people_quantity', 'created_at')
+    readonly_fields = ('book_id', 'customer', 'is_active', 'datetime', 'people_quantity', 'created_at')
     search_fields = ('book_id', )
-    list_filter = (ActiveBookRequests, 'created_at', 'customer', 'date')
+    list_filter = (ActiveBookRequests, 'created_at', 'customer', 'datetime')
 
     def is_active(self, obj):
         return '✅' if obj.is_active else '❌'

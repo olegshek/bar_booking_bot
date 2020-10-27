@@ -38,6 +38,8 @@ DEBUG = env('DEBUG')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', str, [])
 
 INSTALLED_APPS = [
+    'modeltranslation',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'core',
     'apps.bot',
     'apps.customer'
 ]
@@ -143,6 +146,8 @@ LANGUAGES = (
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, "locale"),
 )
+
+I18N_DOMAIN = env.get_value('I18N_DOMAIN')
 
 TELEGRAM_TOKEN = env.get_value('TELEGRAM_TOKEN')
 

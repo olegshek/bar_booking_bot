@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-03 14:38+0500\n"
+"POT-Creation-Date: 2020-10-27 12:10+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,51 +20,77 @@ msgstr ""
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: apps/bot/models.py:8 apps/bot/models.py:20 apps/customer/models.py:7
+#: apps/bot/models.py:11 apps/bot/models.py:23 apps/bot/models.py:83
+#: apps/customer/models.py:8
 msgid "Name"
 msgstr "Название"
 
-#: apps/bot/models.py:9
+#: apps/bot/models.py:12 apps/customer/models.py:9
 #: venv/lib/python3.7/site-packages/django/db/models/fields/__init__.py:2055
 msgid "Text"
 msgstr "Текст"
 
-#: apps/bot/models.py:12
+#: apps/bot/models.py:15
 msgid "Button"
 msgstr "Кнопка"
 
-#: apps/bot/models.py:13 apps/bot/models.py:22
+#: apps/bot/models.py:16 apps/bot/models.py:25
 msgid "Buttons"
 msgstr "Кнопки"
 
-#: apps/bot/models.py:25 apps/bot/models.py:31 apps/bot/models.py:32
+#: apps/bot/models.py:28 apps/bot/models.py:34 apps/bot/models.py:35
 msgid "Keyboard"
 msgstr ""
 
-#: apps/bot/models.py:26
+#: apps/bot/models.py:29
 msgid "Keyboards"
 msgstr ""
 
-#: apps/bot/models.py:36
+#: apps/bot/models.py:39
 msgid "Keyboard buttons ordering"
 msgstr ""
 
-#: apps/bot/models.py:37
+#: apps/bot/models.py:40
 msgid "Keyboard buttons orderings"
 msgstr ""
 
-#: apps/bot/models.py:41
+#: apps/bot/models.py:44
 msgid "Title"
 msgstr "Заголовок"
 
-#: apps/bot/models.py:45
+#: apps/bot/models.py:48
 msgid "Message"
 msgstr "Сообщение"
 
-#: apps/bot/models.py:46
+#: apps/bot/models.py:49
 #: venv/lib/python3.7/site-packages/django/contrib/messages/apps.py:7
 msgid "Messages"
 msgstr "Сообщения"
+
+#: apps/bot/models.py:56
+#| msgid "Phone number"
+msgid "Seats number"
+msgstr "Номер телефона"
+
+#: apps/bot/models.py:57
+msgid "Additional seats number"
+msgstr ""
+
+#: apps/bot/models.py:60 apps/bot/models.py:61
+msgid "Seats manager"
+msgstr ""
+
+#: apps/bot/models.py:71
+msgid "Start time"
+msgstr ""
+
+#: apps/bot/models.py:72
+msgid "End time"
+msgstr ""
+
+#: apps/bot/models.py:75 apps/bot/models.py:76
+msgid "Working hours"
+msgstr ""
 
 #: apps/customer/__init__.py:7
 msgid "MALE"
@@ -78,79 +104,85 @@ msgstr "ЖЕНСКИЙ"
 msgid "By status"
 msgstr "По статусу"
 
-#: apps/customer/admin.py:39 apps/customer/admin.py:67
+#: apps/customer/admin.py:39 apps/customer/admin.py:70
 msgid "Active"
 msgstr "Активные"
 
-#: apps/customer/models.py:8
-msgid "Name ru"
-msgstr ""
-
-#: apps/customer/models.py:17
+#: apps/customer/models.py:18
 msgid "Full name"
 msgstr "Ф.И.О"
 
-#: apps/customer/models.py:18 apps/customer/models.py:34
+#: apps/customer/models.py:19 apps/customer/models.py:37
 msgid "Phone number"
 msgstr "Номер телефона"
 
-#: apps/customer/models.py:19
+#: apps/customer/models.py:20
 msgid "Age"
 msgstr "Возраст"
 
-#: apps/customer/models.py:21
+#: apps/customer/models.py:22
 msgid "Gender"
 msgstr "Пол"
 
-#: apps/customer/models.py:22
+#: apps/customer/models.py:23
 msgid "Related people"
 msgstr "Знакомые в баре"
 
-#: apps/customer/models.py:23
+#: apps/customer/models.py:24
 msgid "Is blocked"
 msgstr "Заблокирован"
 
-#: apps/customer/models.py:26 apps/customer/models.py:46
+#: apps/customer/models.py:26
+msgid "Language"
+msgstr ""
+
+#: apps/customer/models.py:29 apps/customer/models.py:49
 msgid "Customer"
 msgstr "Клиент"
 
-#: apps/customer/models.py:27
+#: apps/customer/models.py:30
 msgid "Customers"
 msgstr "Клиенты"
 
-#: apps/customer/models.py:37
+#: apps/customer/models.py:40
 msgid "Blocked user"
 msgstr "Заблокированный пользователь"
 
-#: apps/customer/models.py:38
+#: apps/customer/models.py:41
 msgid "Blocked users"
 msgstr "Заблокированные пользователи"
 
-#: apps/customer/models.py:47
-msgid "Date"
+#: apps/customer/models.py:50
+#| msgid "Date"
+msgid "Datetime"
 msgstr "Дата бронированиея"
 
-#: apps/customer/models.py:48
+#: apps/customer/models.py:51
 msgid "People quantity"
 msgstr "Количество людей"
 
-#: apps/customer/models.py:49
+#: apps/customer/models.py:53
+#| msgid "Created at"
+msgid "Confirmed at"
+msgstr "Дата создания"
+
+#: apps/customer/models.py:54
 msgid "Created at"
 msgstr "Дата создания"
 
-#: apps/customer/models.py:53
+#: apps/customer/models.py:58
 msgid "Book request"
 msgstr "Запрос на бронирование"
 
-#: apps/customer/models.py:54
+#: apps/customer/models.py:59
 msgid "Book requests"
 msgstr "Запросы на бронирование"
 
-#: config/settings.py:139
+#: config/settings.py:142
 msgid "Russian"
 msgstr ""
 
-#: config/settings.py:140
+#: config/settings.py:143
 msgid "English"
 msgstr ""
 
@@ -1329,4 +1361,8 @@ msgstr ""
 
 #: venv/lib/python3.7/site-packages/django/views/templates/default_urlconf.html:409
 msgid "Connect, get help, or contribute"
+msgstr ""
+
+#: venv/lib/python3.7/site-packages/modeltranslation/widgets.py:25
+msgid "None"
 msgstr ""

@@ -1,16 +1,1 @@
-[
-  {
-    "model": "bot.keyboard",
-    "pk": 1,
-    "fields": {
-      "name": "phone_number"
-    }
-  },
-  {
-    "model": "bot.keyboard",
-    "pk": 2,
-    "fields": {
-      "name": "main_menu"
-    }
-  }
-]
+[{"model": "bot.keyboard", "pk": 1, "fields": {"name": "phone_number"}}, {"model": "bot.keyboard", "pk": 2, "fields": {"name": "main_menu"}}, {"model": "bot.keyboard", "pk": 3, "fields": {"name": "language_choice"}}]

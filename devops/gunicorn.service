@@ -7,15 +7,7 @@ User=bar
 Group=www-data
 WorkingDirectory=/home/bar/bar_booking_bot
 Environment=PYTHONUNBUFFERED=TRUE
-ExecStart=/home/bar/bar_booking_bot/venv/bin/gunicorn \
-  --log-level=debug \
-  --name "bar_booking_gunicorn" \
-  --error-logfile /home/bar/bar_booking_bot/logs/gunicorn-error.log \
-  --access-logfile /home/bar/bar_booking_bot/logs/gunicorn-access.log \
-  --capture-output \
-  --workers 3 \
-  --bind=unix:/home/bar/bar_booking_bot/run/bar.sock \
-  config.wsgi:application
+    ExecStart=/home/bar/bar_booking_bot/venv/bin/gunicorn --log-level=debug --name "bar_booking_gunicorn" --error-logfile /home/bar/bar_booking_bot/logs/gunicorn-error.log --access-logfile /home/bar/bar_booking_bot/logs/gunicorn-access.log --capture-output --workers 3 --bind=unix:/home/bar/bar_booking_bot/run/bar.sock config.wsgi:application
 
 [Install]
 WantedBy=multi-user.target

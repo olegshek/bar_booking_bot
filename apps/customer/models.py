@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -5,10 +6,10 @@ from django.utils.translation import gettext_lazy as _
 
 class Gender(models.Model):
     name = models.CharField(max_length=6, verbose_name=_('Name'))
-    name_ru = models.CharField(max_length=10, verbose_name=_('Name ru'))
+    text = models.CharField(max_length=10, verbose_name=_('Text'))
 
     def __str__(self):
-        return self.name_ru
+        return self.text
 
 
 class Customer(models.Model):
@@ -21,6 +22,8 @@ class Customer(models.Model):
                                verbose_name=_('Gender'))
     related_people = models.TextField(null=True, verbose_name=_('Related people'))
     is_blocked = models.BooleanField(default=False, verbose_name=_('Is blocked'))
+
+    language = models.CharField(max_length=2, choices=settings.LANGUAGES, null=True, verbose_name=_('Language'))
 
     class Meta:
         verbose_name = _('Customer')
@@ -44,12 +47,14 @@ class BlockedUser(models.Model):
 class BookRequest(models.Model):
     book_id = models.IntegerField(null=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='book_requests', verbose_name=_('Customer'))
-    date = models.DateField(null=True, verbose_name=_('Date'))
+    datetime = models.DateTimeField(null=True, verbose_name=_('Datetime'))
     people_quantity = models.IntegerField(null=True, verbose_name=_('People quantity'))
+
+    confirmed_at = models.DateTimeField(null=True, verbose_name=_('Confirmed at'))
     created_at = models.DateTimeField(default=timezone.now, verbose_name=_('Created at'))
 
     class Meta:
-        ordering = ('-created_at', )
+        ordering = ('-confirmed_at', )
         verbose_name = _('Book request')
         verbose_name_plural = _('Book requests')
 
@@ -58,7 +63,7 @@ class BookRequest(models.Model):
 
     @property
     def is_active(self):
-        return self.date >= timezone.now().date()
+        return self.datetime.date() >= timezone.now().date()
 
 
 

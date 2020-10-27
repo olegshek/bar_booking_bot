@@ -1,7 +1,10 @@
-from uuid import uuid4
-
 from django.db import models
+from django.db.models import Sum
+from django.db.models.functions import Coalesce
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
+from apps.customer.models import BookRequest
 
 
 class Button(models.Model):
@@ -47,3 +50,35 @@ class Message(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class SeatsManager(models.Model):
+    stock_seats_number = models.PositiveIntegerField(default=50, verbose_name=_('Seats number'))
+    additional_seats_number = models.PositiveIntegerField(default=0, verbose_name=_('Additional seats number'))
+
+    class Meta:
+        verbose_name = _('Seats manager')
+        verbose_name_plural = _('Seats manager')
+
+    def get_free_seats(self, date=timezone.now().date()):
+        occupied_seats = BookRequest.objects.filter(created_at__date=date).aggregate(
+            seats_sum=Coalesce(Sum('people_quantity'), 0)
+        )['seats_sum']
+        return self.stock_seats_number - occupied_seats + self.additional_seats_number
+
+
+class WorkingHours(models.Model):
+    start_time = models.TimeField(verbose_name=_('Start time'))
+    end_time = models.TimeField(verbose_name=_('End time'))
+
+    class Meta:
+        verbose_name = _('Working hours')
+        verbose_name_plural = _('Working hours')
+
+    def __str__(self):
+        return f'{self._meta.verbose_name}-{self.id}'
+
+
+class Weekday(models.Model):
+    name = models.CharField(max_length=2, verbose_name=_('Name'))
+
