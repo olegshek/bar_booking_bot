@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 class Gender(models.Model):
     name = models.CharField(max_length=6, verbose_name=_('Name'))
-    text = models.CharField(max_length=10, verbose_name=_('Text'))
+    text = models.CharField(max_length=10, null=True, verbose_name=_('Text'))
 
     def __str__(self):
         return self.text
