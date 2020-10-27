@@ -12,6 +12,7 @@ chardet==3.0.4
 click==7.1.2
 Django==3.1.2
 django-environ==0.4.5
+django-modeltranslation==0.16
 gunicorn==20.0.4
 h11==0.10.0
 hiredis==1.1.0
@@ -22,6 +23,7 @@ pkg-resources==0.0.0
 psycopg2==2.8.6
 PyPika==0.42.1
 pytz==2020.1
+six==1.15.0
 sqlparse==0.3.1
 tortoise-orm==0.16.16
 typing-extensions==3.7.4.3
