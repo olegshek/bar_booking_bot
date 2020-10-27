@@ -1,5 +1,4 @@
 from aiogram import types
-from aiogram.types import ContentType
 from aiogram.utils.exceptions import TelegramAPIError
 from django.utils import timezone
 
@@ -85,22 +84,6 @@ async def main_menu(message, state, locale):
     button = await Button.get(**{f'text_{locale}': message.text})
 
     if button.name == 'book':
-        book_request = await BookRequest.filter(datetime__gte=timezone.now().date(), customer_id=user_id).first()
-        if book_request:
-            local_datetime = book_request.datetime.astimezone()
-            message = (await messages.get_message('already_booked', locale)) % {
-                'book_id': book_request.book_id,
-                'date': str(local_datetime.date()),
-                'time': timezone.datetime.strftime(local_datetime, '%H:%M'),
-                'people_quantity': str(book_request.people_quantity)
-            }
-
-            await bot.send_message(user_id, message, reply_markup=keyboards.remove_keyboard)
-
-            message = await messages.get_message('main_menu', locale)
-            keyboard = await keyboards.main_menu(locale)
-            return await bot.send_message(user_id, message, reply_markup=keyboard)
-
         message = await messages.get_message('book_date', locale)
         keyboard = await telegram_calendar.create_calendar(locale)
         await BotForm.book_date.set()
@@ -136,6 +119,22 @@ async def process_date_selection(query, state, locale):
             return await bot.edit_message_text(message, user_id, message_id, reply_markup=keyboard)
         except TelegramAPIError:
             return
+
+    for book_request in await BookRequest.filter(datetime__gte=timezone.now().date(), customer_id=user_id):
+        if book_request.datetime.date() == date:
+            local_datetime = book_request.datetime.astimezone()
+            message = (await messages.get_message('already_booked', locale)) % {
+                'book_id': book_request.book_id,
+                'date': str(local_datetime.date()),
+                'time': timezone.datetime.strftime(local_datetime, '%H:%M'),
+                'people_quantity': str(book_request.people_quantity)
+            }
+
+            keyboard = await create_calendar(locale)
+            try:
+                return await bot.edit_message_text(message, user_id, message_id, reply_markup=keyboard)
+            except TelegramAPIError:
+                return
 
     async with state.proxy() as data:
         data['date'] = str(date)
