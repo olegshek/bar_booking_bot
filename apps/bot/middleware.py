@@ -23,6 +23,13 @@ class AccessControl(BaseMiddleware):
                 await bot.send_message(user_id, message, reply_markup=keyboards.remove_keyboard)
                 raise CancelHandler()
 
+    async def on_process_update(self, update, *args, **kwargs):
+        user_id = update.message.from_user.id if update.message else update.callback_query.from_user.id
+
+        if not await Customer.filter(id=user_id) and (update.message and update.message.text != '/start'):
+            await bot.send_message(user_id, await messages.get_message('press_start', 'ru'))
+            raise CancelHandler()
+
 
 class Localization(I18nMiddleware):
     async def get_user_locale(self, action: str, args: Tuple[Any]) -> str:
