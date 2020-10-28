@@ -58,7 +58,7 @@ async def register_customer(message, state: FSMContext, locale):
         if not text.isdigit():
             message = await messages.get_message('age', locale)
             keyboard = await keyboards.back_keyboard(locale)
-            return await bot.send_message(user_id, message, keyboard=keyboard)
+            return await bot.send_message(user_id, message, reply_markup=keyboard)
 
         age = int(text)
         customer.age = int(text)

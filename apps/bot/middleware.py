@@ -25,7 +25,9 @@ class AccessControl(BaseMiddleware):
     async def on_process_update(self, update, *args, **kwargs):
         user_id = update.message.from_user.id if update.message else update.callback_query.from_user.id
 
-        if not await Customer.filter(id=user_id) and (update.message and update.message.text != '/start'):
+        if not await Customer.filter(id=user_id) and (
+                (update.message and update.message.text != '/start') or not update.message
+        ):
             await bot.send_message(user_id, await messages.get_message('press_start', 'ru'))
             raise CancelHandler()
 
