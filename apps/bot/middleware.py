@@ -1,7 +1,6 @@
 import gettext
 from typing import Tuple, Any, Dict
 
-from aiogram import types
 from aiogram.contrib.middlewares.i18n import I18nMiddleware
 from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware

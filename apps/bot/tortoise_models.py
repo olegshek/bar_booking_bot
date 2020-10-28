@@ -92,3 +92,4 @@ class Weekday(models.Model):
 
     class Meta:
         table = f'{app_name}_weekday'
+        ordering = ('id', )
