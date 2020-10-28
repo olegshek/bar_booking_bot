@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-27 12:10+0500\n"
+"POT-Creation-Date: 2020-10-28 13:06+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: apps/bot/models.py:11 apps/bot/models.py:23 apps/bot/models.py:83
+#: apps/bot/models.py:11 apps/bot/models.py:23 apps/bot/models.py:86
 #: apps/customer/models.py:8
 msgid "Name"
 msgstr "Название"
@@ -68,29 +68,36 @@ msgid "Messages"
 msgstr "Сообщения"
 
 #: apps/bot/models.py:56
-#| msgid "Phone number"
 msgid "Seats number"
-msgstr "Номер телефона"
+msgstr "Базовое количество мест"
 
 #: apps/bot/models.py:57
 msgid "Additional seats number"
-msgstr ""
+msgstr "Количество дополнительных мест"
 
 #: apps/bot/models.py:60 apps/bot/models.py:61
 msgid "Seats manager"
-msgstr ""
+msgstr "Менеджер посадочных мест"
 
-#: apps/bot/models.py:71
+#: apps/bot/models.py:74
 msgid "Start time"
-msgstr ""
+msgstr "Время открытия"
 
-#: apps/bot/models.py:72
+#: apps/bot/models.py:75
 msgid "End time"
-msgstr ""
+msgstr "Время закрытия"
 
-#: apps/bot/models.py:75 apps/bot/models.py:76
+#: apps/bot/models.py:78 apps/bot/models.py:79
 msgid "Working hours"
-msgstr ""
+msgstr "Рабочие часы"
+
+#: apps/bot/models.py:89
+msgid "Weekday"
+msgstr "День недели"
+
+#: apps/bot/models.py:90
+msgid "Weekdays"
+msgstr "Дни недели"
 
 #: apps/customer/__init__.py:7
 msgid "MALE"
@@ -153,7 +160,6 @@ msgid "Blocked users"
 msgstr "Заблокированные пользователи"
 
 #: apps/customer/models.py:50
-#| msgid "Date"
 msgid "Datetime"
 msgstr "Дата бронированиея"
 
@@ -162,7 +168,6 @@ msgid "People quantity"
 msgstr "Количество людей"
 
 #: apps/customer/models.py:53
-#| msgid "Created at"
 msgid "Confirmed at"
 msgstr "Дата создания"
 

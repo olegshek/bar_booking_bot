@@ -61,7 +61,7 @@ class SeatsManager(models.Model):
         verbose_name_plural = _('Seats manager')
 
     def __str__(self):
-        return self._meta.verbose_name
+        return str(self._meta.verbose_name)
 
     def get_free_seats(self, date=timezone.now().date()):
         occupied_seats = BookRequest.objects.filter(created_at__date=date).aggregate(
@@ -79,13 +79,15 @@ class WorkingHours(models.Model):
         verbose_name_plural = _('Working hours')
 
     def __str__(self):
-        return self._meta.verbose_name
+        return str(self._meta.verbose_name)
 
 
 class Weekday(models.Model):
     name = models.CharField(max_length=5, unique=True, verbose_name=_('Name'))
 
     class Meta:
+        verbose_name = _('Weekday')
+        verbose_name_plural = _('Weekdays')
         ordering = ('id', )
 
     def __str__(self):
