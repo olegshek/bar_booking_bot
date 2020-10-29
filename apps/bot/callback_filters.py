@@ -12,7 +12,7 @@ async def inline_back(query):
 
 async def message_is_not_start(message):
     user = await Customer.filter(id=message.from_user.id).first()
-    if not user or user.language:
+    if not user or not user.language:
         locale = 'ru'
     else:
         locale = user.language
