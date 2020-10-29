@@ -11,7 +11,11 @@ async def inline_back(query):
 
 
 async def message_is_not_start(message):
-    locale = (await Customer.get(id=message.from_user.id)).language
+    user = await Customer.filter(id=message.from_user.id).first()
+    if not user or user.language:
+        locale = 'ru'
+    else:
+        locale = user.language
     return message.text not in ['/start', '/stop', getattr(await Button.get(name='back'), f'text_{locale}')]
 
 
