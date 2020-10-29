@@ -155,11 +155,3 @@ WEBHOOK_URL = env.get_value('WEBHOOK_URL')
 
 PG_URL = f"postgres://{env.get_value('POSTGRES_USER')}:{env.get_value('POSTGRES_PASSWORD')}@{env.get_value('POSTGRES_HOST')}:" \
          f"{env.get_value('POSTGRES_PORT')}/{env.get_value('POSTGRES_NAME')}"
-
-REDIS_HOST = env('REDIS_DEFAULT_HOST')
-REDIS_PORT = env('REDIS_DEFAULT_PORT')
-REDIS_DB = env('REDIS_DEFAULT_DB')
-
-CELERY_BROKER_URL = 'redis://{}:{}/{}'.format(
-    REDIS_HOST, REDIS_PORT, REDIS_DB
-)

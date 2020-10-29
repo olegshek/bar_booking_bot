@@ -66,20 +66,16 @@ class SeatsManager(models.Model):
     class Meta:
         table = f'{app_name}_seatsmanager'
 
-    async def get_free_seats(self, date=timezone.now()):
+    async def get_free_seats(self, date=timezone.now().date()):
         occupied_seats = await BookRequest.filter(
             created_at__gte=date,
             created_at__lte=date + timezone.timedelta(days=1),
             confirmed_at__isnull=False
         ).order_by('people_quantity').annotate(seats_sum=Sum('people_quantity')).first()
 
-        res = (self.stock_seats_number or 0) - \
-               (occupied_seats.seats_sum if occupied_seats else 0)
-
-        if date.date() == timezone.now().date():
-            res += self.additional_seats_number
-
-        return res
+        return (self.stock_seats_number or 0) - \
+               (occupied_seats.seats_sum if occupied_seats else 0) + \
+               self.additional_seats_number
 
 
 class WorkingHours(models.Model):
@@ -97,3 +93,4 @@ class Weekday(models.Model):
     class Meta:
         table = f'{app_name}_weekday'
         ordering = ('id', )
+
