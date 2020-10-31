@@ -34,11 +34,9 @@ async def create_calendar(locale, year=None, month=None):
     keyboard.row(*row)
 
     date = now.date()
-    if now + timezone.timedelta(hours=1) >= await utils.order_datetime(date):
-        date += timezone.timedelta(days=1)
+    order_time_condition = now + timezone.timedelta(hours=1) >= await utils.order_datetime(date)
 
-    if timezone.now().time() > (await WorkingHours.first()).start_time:
-        date += timezone.timedelta(days=1)
+    working_hours_condition = timezone.now().time() > (timezone.datetime.combine(now.date(), (await WorkingHours.first()).end_time) + timezone.timedelta(hours=1)).time()
 
     dates = []
     for i in range(7):
@@ -55,7 +53,9 @@ async def create_calendar(locale, year=None, month=None):
     for week in weeks:
         row = []
         for date in week:
-            if today > date or date > today + timezone.timedelta(days=6):
+            if today > date or \
+                    date > today + timezone.timedelta(days=6) or \
+                    (date == today and (working_hours_condition or order_time_condition)):
                 row.append(InlineKeyboardButton(" ", callback_data=data_ignore))
             else:
                 row.append(InlineKeyboardButton(str(date.day),
