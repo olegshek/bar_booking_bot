@@ -1,0 +1,12 @@
+[Unit]
+Description=Bar Celery Beat Service
+After=network.target
+
+[Service]
+User=bar
+Group=www-data
+WorkingDirectory=/home/bar/bar_booking_bot
+ExecStart=/home/bar/bar_booking_bot/venv/bin/celery beat -A config.celery -l info --logfile ./logs/celery_beat.log
+
+[Install]
+WantedBy=multi-user.target
