@@ -12,7 +12,7 @@ async def callback_filter(query, keyboard_name):
 
 async def message_filter(message, keyboard_name):
     user = await Customer.filter(id=message.from_user.id).first()
-    if not user or user.language:
+    if not user or not user.language:
         return False
 
     locale = user.language
