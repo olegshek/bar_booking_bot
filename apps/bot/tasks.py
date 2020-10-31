@@ -7,5 +7,5 @@ from apps.bot.models import WorkingHours, SeatsManager
 
 @periodic_task(run_every=crontab(minute='*'), name='renew_additional_seats', ignore_result=True)
 def renew_additional_seats():
-    # if WorkingHours.objects.first().end_time < timezone.now().astimezone().time():
-    SeatsManager.objects.update(additional_seats_number=0)
+    if WorkingHours.objects.first().end_time < timezone.now().astimezone().time():
+        SeatsManager.objects.update(additional_seats_number=0)
