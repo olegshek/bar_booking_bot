@@ -59,7 +59,8 @@ async def create_calendar(locale, year=None, month=None):
                 row.append(InlineKeyboardButton(" ", callback_data=data_ignore))
             else:
                 row.append(InlineKeyboardButton(str(date.day),
-                                                callback_data=create_callback_data("DAY", year, month, date.day)))
+                                                callback_data=create_callback_data("DAY", date.year, date.month,
+                                                                                   date.day)))
         keyboard.row(*row)
 
     back_button_obj = await get_back_button_obj()

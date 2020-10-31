@@ -66,16 +66,22 @@ class SeatsManager(models.Model):
     class Meta:
         table = f'{app_name}_seatsmanager'
 
-    async def get_free_seats(self, date=timezone.now().date()):
+    async def get_free_seats(self, date=timezone.now().replace(hour=0, minute=0, second=0)):
         occupied_seats = await BookRequest.filter(
-            created_at__gte=date,
-            created_at__lte=date + timezone.timedelta(days=1),
+            datetime__gte=date,
+            datetime__lte=date + timezone.timedelta(days=1),
             confirmed_at__isnull=False
-        ).order_by('people_quantity').annotate(seats_sum=Sum('people_quantity')).first()
+        )
+        seats_sum = 0
+        for seat in occupied_seats:
+            seats_sum += seat.people_quantity
 
-        return (self.stock_seats_number or 0) - \
-               (occupied_seats.seats_sum if occupied_seats else 0) + \
-               self.additional_seats_number
+        res = (self.stock_seats_number or 0) - seats_sum
+
+        if date.date() == timezone.now().date():
+            res += self.additional_seats_number
+
+        return res
 
 
 class WorkingHours(models.Model):
