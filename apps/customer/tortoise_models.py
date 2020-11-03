@@ -8,8 +8,12 @@ from tortoise.fields import SET_NULL, CASCADE
 from apps.customer import app_name
 
 
-def _generate_book_id():
-    return random.randint(1000, 10000000)
+async def _generate_book_id():
+    new_id = random.randint(1000, 10000000)
+    if new_id in await BookRequest.all().values_list('id', flat=True):
+        return await _generate_book_id()
+    else:
+        return new_id
 
 
 class Gender(models.Model):
@@ -59,3 +63,12 @@ class BookRequest(models.Model):
 
     class Meta:
         table = f'{app_name}_bookrequest'
+
+
+class Feedback(models.Model):
+    book_request = fields.OneToOneField('customer.BookRequest', on_delete=CASCADE, related_name='feedback', pk=True)
+    text = fields.CharField(max_length=4096)
+    created_at = fields.DatetimeField(default=timezone.now)
+
+    class Meta:
+        table = f'{app_name}_feedback'

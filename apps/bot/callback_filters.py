@@ -1,5 +1,5 @@
 from apps.bot.tortoise_models import Button
-from apps.customer.tortoise_models import Customer
+from apps.customer.tortoise_models import Customer, BookRequest
 
 
 async def keyboard_back(message):
@@ -37,3 +37,13 @@ async def time_processing(query):
 
 async def accept_time(query):
     return 'accept' in query.data or 'certain_time' in query.data
+
+
+async def feedback_choice(query):
+    data = query.data
+    if len(data.split(';')) != 2:
+        return False
+
+    action, request_id = data.split(';')
+    book_request_ids = await BookRequest.all().values_list('book_id', flat=True)
+    return action in ['yes', 'no'] and int(request_id) in book_request_ids

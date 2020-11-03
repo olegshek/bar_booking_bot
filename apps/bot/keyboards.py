@@ -5,7 +5,6 @@ from django.utils import timezone
 
 from apps.bot import utils
 from apps.bot.tortoise_models import Button, KeyboardButtonsOrdering, WorkingHours
-from apps.customer import GENDERS
 from apps.customer.tortoise_models import Gender
 
 checkout_emoji = {
@@ -152,6 +151,13 @@ async def time_choice(date, locale, option=None, time_type=None, time_data=None)
 async def back_keyboard(locale):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     button = await get_back_button_obj()
+    keyboard.add(types.KeyboardButton(getattr(button, f'text_{locale}')))
+    return keyboard
+
+
+async def cancel_keyboard(locale):
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    button = await Button.get(name='cancel')
     keyboard.add(types.KeyboardButton(getattr(button, f'text_{locale}')))
     return keyboard
 

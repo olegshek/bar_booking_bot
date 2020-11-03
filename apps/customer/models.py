@@ -46,7 +46,8 @@ class BlockedUser(models.Model):
 
 class BookRequest(models.Model):
     book_id = models.IntegerField(null=True)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='book_requests', verbose_name=_('Customer'))
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='book_requests',
+                                 verbose_name=_('Customer'))
     datetime = models.DateTimeField(null=True, verbose_name=_('Datetime'))
     people_quantity = models.IntegerField(null=True, verbose_name=_('People quantity'))
 
@@ -54,7 +55,7 @@ class BookRequest(models.Model):
     created_at = models.DateTimeField(default=timezone.now, verbose_name=_('Created at'))
 
     class Meta:
-        ordering = ('-confirmed_at', )
+        ordering = ('-confirmed_at',)
         verbose_name = _('Book request')
         verbose_name_plural = _('Book requests')
 
@@ -66,4 +67,15 @@ class BookRequest(models.Model):
         return self.datetime.date() >= timezone.now().date()
 
 
+class Feedback(models.Model):
+    book_request = models.OneToOneField(BookRequest, on_delete=models.CASCADE, related_name='feedback',
+                                        primary_key=True, verbose_name=_('Book request'))
+    text = models.CharField(max_length=4096, verbose_name=_('Text'))
+    created_at = models.DateTimeField(default=timezone.now)
 
+    class Meta:
+        verbose_name = _('Feedback')
+        verbose_name_plural = _('Feedbacks')
+
+    def __str__(self):
+        return str(self.book_request.book_id)

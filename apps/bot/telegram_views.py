@@ -1,17 +1,19 @@
 from aiogram import types
+from aiogram.types import ContentType
 from aiogram.utils.exceptions import TelegramAPIError
 from django.utils import timezone
 
 from apps.bot import dispatcher as dp, bot, keyboards, messages, telegram_calendar
 from apps.bot.callback_filters import message_is_not_start, keyboard_back, date_selection, time_processing, accept_time, \
-    data_is_digit, inline_back
+    data_is_digit, inline_back, feedback_choice
+from apps.bot.keyboards import cancel_keyboard
 from apps.bot.states import BotForm
 from apps.bot.telegram_calendar import separate_callback_data, create_calendar
 from apps.bot.tortoise_models import Button, SeatsManager, WorkingHours
 from apps.customer.callback_filters import main_menu_filter
 from apps.customer.states import RegisterForm, CustomerForm
 from apps.customer.telegram_views import registration_form
-from apps.customer.tortoise_models import Customer, BookRequest
+from apps.customer.tortoise_models import Customer, BookRequest, Feedback
 
 
 async def back(user_id, state, locale, message_id=None):
@@ -224,3 +226,45 @@ async def people_quantity(query, state, locale):
         await BotForm.main_menu.set()
         keyboard = await keyboards.main_menu(locale)
         await bot.send_message(user_id, await messages.get_message('main_menu', locale), reply_markup=keyboard)
+
+
+@dp.callback_query_handler(feedback_choice, state='*')
+async def choice_feedback(query, locale, state):
+    action, request_id = query.data.split(';')
+    user_id = query.from_user.id
+    message_id = query.message.message_id
+    if action == 'no':
+        try:
+            await bot.delete_message(user_id, message_id)
+        except TelegramAPIError:
+            pass
+        return
+
+    async with state.proxy() as data:
+        data['request_id'] = request_id
+
+    await BotForm.feedback_write.set()
+
+    try:
+        await bot.delete_message(user_id, message_id)
+    except TelegramAPIError:
+        pass
+
+    await bot.send_message(user_id, await messages.get_message('feedback_write', locale),
+                           reply_markup=await cancel_keyboard(locale))
+
+
+@dp.message_handler(message_is_not_start, state=BotForm.feedback_write, content_types=[ContentType.TEXT])
+async def feedback_save(message, locale, state):
+    text = message.text
+    user_id = message.from_user.id
+
+    if text != getattr(await Button.get(name='cancel'), f'text_{locale}'):
+        async with state.proxy() as data:
+            request_id = data['request_id']
+
+        book_request = await BookRequest.get(book_id=request_id)
+        await Feedback.create(book_request=book_request, text=text)
+        await bot.send_message(user_id, await messages.get_message('feedback_accepted', locale))
+
+    await registration_form(user_id, locale)

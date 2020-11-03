@@ -1,4 +1,5 @@
 import calendar
+from asyncio import sleep
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from django.utils import timezone
@@ -17,7 +18,7 @@ def separate_callback_data(data):
 
 
 async def create_calendar(locale, year=None, month=None):
-    now = timezone.datetime.now()
+    now = timezone.now().astimezone().replace(microsecond=0)
     if not year:
         year = now.year
     if not month:
@@ -34,9 +35,13 @@ async def create_calendar(locale, year=None, month=None):
     keyboard.row(*row)
 
     date = now.date()
-    order_time_condition = now + timezone.timedelta(hours=1) >= await utils.order_datetime(date)
+    order_datetime = await utils.order_datetime(date)
+    order_time_condition = now + timezone.timedelta(hours=1) > order_datetime
 
-    working_hours_condition = timezone.now().time() > (timezone.datetime.combine(now.date(), (await WorkingHours.first()).end_time) + timezone.timedelta(hours=1)).time()
+    working_hours_condition = (now + timezone.timedelta(hours=1)).time() > (timezone.datetime.combine(
+        now.date(),
+        (await WorkingHours.first()).end_time
+    )).time()
 
     dates = []
     for i in range(7):

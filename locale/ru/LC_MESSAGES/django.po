@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-28 13:06+0500\n"
+"POT-Creation-Date: 2020-11-02 17:29+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgstr ""
 msgid "Name"
 msgstr "Название"
 
-#: apps/bot/models.py:12 apps/customer/models.py:9
+#: apps/bot/models.py:12 apps/customer/models.py:9 apps/customer/models.py:73
 #: venv/lib/python3.7/site-packages/django/db/models/fields/__init__.py:2055
 msgid "Text"
 msgstr "Текст"
@@ -107,13 +107,23 @@ msgstr "МУЖСКОЙ"
 msgid "FEMALE"
 msgstr "ЖЕНСКИЙ"
 
-#: apps/customer/admin.py:34
+#: apps/customer/admin.py:36
 msgid "By status"
 msgstr "По статусу"
 
-#: apps/customer/admin.py:39 apps/customer/admin.py:70
+#: apps/customer/admin.py:41 apps/customer/admin.py:80
 msgid "Active"
 msgstr "Активные"
+
+#: apps/customer/admin.py:74 apps/customer/models.py:29
+#: apps/customer/models.py:50
+msgid "Customer"
+msgstr "Клиент"
+
+#: apps/customer/admin.py:94 apps/customer/models.py:59
+#: apps/customer/models.py:72
+msgid "Book request"
+msgstr "Запрос на бронирование"
 
 #: apps/customer/models.py:18
 msgid "Full name"
@@ -143,10 +153,6 @@ msgstr "Заблокирован"
 msgid "Language"
 msgstr ""
 
-#: apps/customer/models.py:29 apps/customer/models.py:49
-msgid "Customer"
-msgstr "Клиент"
-
 #: apps/customer/models.py:30
 msgid "Customers"
 msgstr "Клиенты"
@@ -159,29 +165,33 @@ msgstr "Заблокированный пользователь"
 msgid "Blocked users"
 msgstr "Заблокированные пользователи"
 
-#: apps/customer/models.py:50
+#: apps/customer/models.py:51
 msgid "Datetime"
 msgstr "Дата бронированиея"
 
-#: apps/customer/models.py:51
+#: apps/customer/models.py:52
 msgid "People quantity"
 msgstr "Количество людей"
 
-#: apps/customer/models.py:53
+#: apps/customer/models.py:54
 msgid "Confirmed at"
 msgstr "Дата создания"
 
-#: apps/customer/models.py:54
+#: apps/customer/models.py:55
 msgid "Created at"
 msgstr "Дата создания"
 
-#: apps/customer/models.py:58
-msgid "Book request"
-msgstr "Запрос на бронирование"
-
-#: apps/customer/models.py:59
+#: apps/customer/models.py:60
 msgid "Book requests"
 msgstr "Запросы на бронирование"
+
+#: apps/customer/models.py:77
+msgid "Feedback"
+msgstr "Отзыв"
+
+#: apps/customer/models.py:78
+msgid "Feedbacks"
+msgstr "Отзывы"
 
 #: config/settings.py:142
 msgid "Russian"
@@ -1366,6 +1376,21 @@ msgstr ""
 
 #: venv/lib/python3.7/site-packages/django/views/templates/default_urlconf.html:409
 msgid "Connect, get help, or contribute"
+msgstr ""
+
+#: venv/lib/python3.7/site-packages/kombu/transport/qpid.py:1301
+#, python-format
+msgid "Attempting to connect to qpid with SASL mechanism %s"
+msgstr ""
+
+#: venv/lib/python3.7/site-packages/kombu/transport/qpid.py:1306
+#, python-format
+msgid "Connected to qpid with SASL mechanism %s"
+msgstr ""
+
+#: venv/lib/python3.7/site-packages/kombu/transport/qpid.py:1324
+#, python-format
+msgid "Unable to connect to qpid with SASL mechanism %s"
 msgstr ""
 
 #: venv/lib/python3.7/site-packages/modeltranslation/widgets.py:25
