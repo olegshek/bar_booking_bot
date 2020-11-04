@@ -17,7 +17,7 @@ def separate_callback_data(data):
 
 
 async def create_calendar(locale, year=None, month=None):
-    now = timezone.now().astimezone().replace(microsecond=0)
+    now = timezone.now().astimezone().replace(microsecond=0, tzinfo=None)
     if not year:
         year = now.year
     if not month:

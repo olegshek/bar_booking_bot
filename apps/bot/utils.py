@@ -12,4 +12,4 @@ async def order_datetime(date):
         res_time = book_time
     else:
         res_time = working_time
-    return timezone.datetime.strptime(str(date) + str(res_time).split('.')[0], '%Y-%m-%d%H:%M:%S').astimezone()
+    return timezone.datetime.strptime(str(date) + str(res_time).split('.')[0], '%Y-%m-%d%H:%M:%S')
