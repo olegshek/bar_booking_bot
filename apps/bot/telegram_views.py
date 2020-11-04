@@ -13,7 +13,7 @@ from apps.bot.tortoise_models import Button, SeatsManager, WorkingHours
 from apps.customer.callback_filters import main_menu_filter
 from apps.customer.states import RegisterForm, CustomerForm
 from apps.customer.telegram_views import registration_form
-from apps.customer.tortoise_models import Customer, BookRequest, Feedback
+from apps.customer.tortoise_models import Customer, BookRequest, Feedback, _generate_book_id
 
 
 async def back(user_id, state, locale, message_id=None):
@@ -202,7 +202,9 @@ async def people_quantity(query, state, locale):
         keyboard = await keyboards.people_quantity(locale)
     else:
         datetime = timezone.datetime.strptime(date + time, '%Y-%m-%d%H:%M:%S')
+        book_id = await _generate_book_id()
         book_request = await BookRequest.create(
+            book_id=book_id,
             customer_id=user_id,
             people_quantity=quantity,
             datetime=datetime,

@@ -53,7 +53,7 @@ class BlockedUser(models.Model):
 
 
 class BookRequest(models.Model):
-    book_id = fields.IntField(default=_generate_book_id)
+    book_id = fields.IntField()
     customer = fields.ForeignKeyField('customer.Customer', on_delete=CASCADE, related_name='book_requests')
     datetime = fields.DatetimeField(null=True)
     people_quantity = fields.IntField(null=True)

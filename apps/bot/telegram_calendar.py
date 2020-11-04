@@ -1,5 +1,4 @@
 import calendar
-from asyncio import sleep
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from django.utils import timezone
