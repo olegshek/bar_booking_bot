@@ -10,11 +10,11 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 from django.conf import settings
 
 from apps.bot import bot, dispatcher
-from apps.bot.middleware import AccessControl, i18n
-from tortoise_config.models import start_db_connection
 
 TELEGRAM_TOKEN = settings.TELEGRAM_TOKEN
 
+from apps.bot.middleware import AccessControl, i18n
+from tortoise_config.models import start_db_connection
 
 async def on_startup(app):
     dispatcher.middleware.setup(AccessControl())

@@ -18,7 +18,7 @@ class AccessControl(BaseMiddleware):
         if customer:
             if customer.is_blocked or \
                     customer.phone_number in await BlockedUser.all().values_list('phone_number', flat=True):
-                message = await messages.get_message('is_blocked', customer.language)
+                message = await messages.get_message('is_blocked', customer.language or 'ru')
                 await bot.send_message(user_id, message, reply_markup=keyboards.remove_keyboard)
                 raise CancelHandler()
 
