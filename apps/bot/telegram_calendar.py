@@ -35,12 +35,19 @@ async def create_calendar(locale, year=None, month=None):
 
     date = now.date()
     order_datetime = await utils.order_datetime(date)
-    order_time_condition = now + timezone.timedelta(hours=1) > order_datetime
+    order_time_condition = (now + timezone.timedelta(hours=1)).replace(tzinfo=None) > order_datetime
 
-    working_hours_condition = (now + timezone.timedelta(hours=1)).time() > (timezone.datetime.combine(
+    working_hours = await WorkingHours.first()
+
+    today_end_datetime = (timezone.datetime.combine(
         now.date(),
-        (await WorkingHours.first()).end_time
-    )).time()
+        working_hours.end_time
+    ))
+
+    if today_end_datetime.time() <= working_hours.start_time:
+        today_end_datetime += timezone.timedelta(days=1)
+
+    working_hours_condition = (now + timezone.timedelta(hours=1)) > today_end_datetime
 
     dates = []
     for i in range(7):

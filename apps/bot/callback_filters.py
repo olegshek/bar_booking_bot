@@ -39,11 +39,19 @@ async def accept_time(query):
     return 'accept' in query.data or 'certain_time' in query.data
 
 
-async def feedback_choice(query):
+async def yes_or_no_validation(query, action_name):
     data = query.data
-    if len(data.split(';')) != 2:
+    if len(data.split(';')) != 3:
         return False
 
-    action, request_id = data.split(';')
-    book_request_ids = await BookRequest.all().values_list('book_id', flat=True)
-    return action in ['yes', 'no'] and int(request_id) in book_request_ids
+    action, option, request_id = data.split(';')
+    book_request_ids = await BookRequest.all().values_list('id', flat=True)
+    return action == action_name and option in ['yes', 'no'] and int(request_id) in book_request_ids
+
+
+async def feedback_choice(query):
+    return await yes_or_no_validation(query, 'feedback')
+
+
+async def book_notification(query):
+    return await yes_or_no_validation(query, 'notification')

@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from apps.bot import dispatcher as dp, bot, keyboards, messages, telegram_calendar
 from apps.bot.callback_filters import message_is_not_start, keyboard_back, date_selection, time_processing, accept_time, \
-    data_is_digit, inline_back, feedback_choice
+    data_is_digit, inline_back, feedback_choice, book_notification
 from apps.bot.keyboards import cancel_keyboard
 from apps.bot.states import BotForm
 from apps.bot.telegram_calendar import separate_callback_data, create_calendar
@@ -68,7 +68,7 @@ async def start(message: types.Message, locale):
     user_id = message.from_user.id
     customer = await Customer.filter(id=user_id).first()
     if not customer:
-        await Customer.create(id=user_id, username=message.from_user.username)
+        customer = await Customer.create(id=user_id, username=message.from_user.username)
 
     await bot.send_message(user_id, await messages.get_message('greeting', locale),
                            reply_markup=keyboards.remove_keyboard)
@@ -105,14 +105,26 @@ async def process_date_selection(query, state, locale):
     date = timezone.datetime(int(year), int(month), int(day)).date()
 
     now = timezone.now()
-    end_time = (await WorkingHours.first()).end_time
-    if (now.astimezone() + timezone.timedelta(hours=1)).time() >= end_time and now.date() == date:
-        return await bot.edit_message_text(
-            await messages.get_message('invalid_date', locale),
-            user_id,
-            message_id,
-            reply_markup=await telegram_calendar.create_calendar(locale)
-        )
+    working_hours = await WorkingHours.first()
+    today_end_datetime = (timezone.datetime.combine(
+        now.date(),
+        working_hours.end_time
+    ))
+
+    if today_end_datetime.time() <= working_hours.start_time:
+        today_end_datetime += timezone.timedelta(days=1)
+
+    if (now.astimezone() + timezone.timedelta(hours=1)).replace(tzinfo=None) >= \
+            today_end_datetime and now.date() == date:
+        try:
+            return await bot.edit_message_text(
+                await messages.get_message('invalid_date', locale),
+                user_id,
+                message_id,
+                reply_markup=await telegram_calendar.create_calendar(locale)
+            )
+        except TelegramAPIError:
+            return
 
     if date < timezone.now().date():
         message = await messages.get_message('book_date', locale)
@@ -201,19 +213,24 @@ async def people_quantity(query, state, locale):
         message = (await messages.get_message('no_seats', locale)) % {'seats': str(free_seats)}
         keyboard = await keyboards.people_quantity(locale)
     else:
-        datetime = timezone.datetime.strptime(date + time, '%Y-%m-%d%H:%M:%S')
+        working_hours = await WorkingHours.first()
+        datetime_data = timezone.datetime.strptime(str(date) + str(time), "%Y-%m-%d%H:%M:%S")
+
+        if datetime_data.time() < working_hours.start_time:
+            datetime_data += timezone.timedelta(days=1)
+
         book_id = await _generate_book_id()
         book_request = await BookRequest.create(
             book_id=book_id,
             customer_id=user_id,
             people_quantity=quantity,
-            datetime=datetime,
+            datetime=datetime_data,
             confirmed_at=confirmed_at
         )
         message = (await messages.get_message('successful_booking', locale)) % {
             'book_id': book_request.book_id,
-            'date': str(datetime.date()),
-            'time': timezone.datetime.strftime(datetime, '%H:%M'),
+            'date': str(datetime_data.date()),
+            'time': timezone.datetime.strftime(datetime_data, '%H:%M'),
             'people_quantity': str(book_request.people_quantity)
         }
         keyboard = None
@@ -232,10 +249,10 @@ async def people_quantity(query, state, locale):
 
 @dp.callback_query_handler(feedback_choice, state='*')
 async def choice_feedback(query, locale, state):
-    action, request_id = query.data.split(';')
+    _, option, request_id = query.data.split(';')
     user_id = query.from_user.id
     message_id = query.message.message_id
-    if action == 'no':
+    if option == 'no':
         try:
             await bot.delete_message(user_id, message_id)
         except TelegramAPIError:
@@ -252,8 +269,11 @@ async def choice_feedback(query, locale, state):
     except TelegramAPIError:
         pass
 
-    await bot.send_message(user_id, await messages.get_message('feedback_write', locale),
-                           reply_markup=await cancel_keyboard(locale))
+    await bot.send_message(
+        user_id,
+        await messages.get_message('feedback_write', locale),
+        reply_markup=keyboards.remove_keyboard
+    )
 
 
 @dp.message_handler(message_is_not_start, state=BotForm.feedback_write, content_types=[ContentType.TEXT])
@@ -261,12 +281,30 @@ async def feedback_save(message, locale, state):
     text = message.text
     user_id = message.from_user.id
 
-    if text != getattr(await Button.get(name='cancel'), f'text_{locale}'):
-        async with state.proxy() as data:
-            request_id = data['request_id']
+    async with state.proxy() as data:
+        request_id = data['request_id']
 
-        book_request = await BookRequest.get(book_id=request_id)
-        await Feedback.create(book_request=book_request, text=text)
-        await bot.send_message(user_id, await messages.get_message('feedback_accepted', locale))
+    await Feedback.create(book_request_id=request_id, text=text)
+
+    await bot.send_message(user_id, await messages.get_message('feedback_accepted', locale))
+
+    await registration_form(user_id, locale)
+
+
+@dp.callback_query_handler(book_notification, state='*')
+async def notification_choice(query, locale):
+    user_id = query.from_user.id
+    _, option, request_id = query.data.split(';')
+
+    if option == 'no':
+        book_request = await BookRequest.get(id=request_id)
+        seats_manager = await SeatsManager.first()
+        seats_manager.additional_seats_number += book_request.people_quantity
+        await seats_manager.save()
+
+    try:
+        await bot.delete_message(user_id, query.message.message_id)
+    except TelegramAPIError:
+        pass
 
     await registration_form(user_id, locale)

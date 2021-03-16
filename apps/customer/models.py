@@ -52,6 +52,9 @@ class BookRequest(models.Model):
     people_quantity = models.IntegerField(null=True, verbose_name=_('People quantity'))
 
     confirmed_at = models.DateTimeField(null=True, verbose_name=_('Confirmed at'))
+    notified_at = models.DateTimeField(null=True, verbose_name=_('Notified at'))
+    feedback_requested_at = models.DateTimeField(null=True, verbose_name=_('Feedback requested at'))
+
     created_at = models.DateTimeField(default=timezone.now, verbose_name=_('Created at'))
 
     class Meta:

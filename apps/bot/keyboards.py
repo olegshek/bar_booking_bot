@@ -5,6 +5,7 @@ from django.utils import timezone
 
 from apps.bot import utils
 from apps.bot.tortoise_models import Button, KeyboardButtonsOrdering, WorkingHours
+from apps.bot.utils import today_end_datetime
 from apps.customer.tortoise_models import Gender
 
 checkout_emoji = {
@@ -95,16 +96,21 @@ async def time_choice(date, locale, option=None, time_type=None, time_data=None)
     order_time = order_datetime.time()
 
     if all([option, time_type, time_data]):
+        working_hours = await WorkingHours.first()
         datetime_data = timezone.datetime.strptime(str(date) + str(time_data), "%Y-%m-%d%H:%M:%S")
-        new_timedelta = timezone.timedelta(hours=1) if time_type == 'hour' else timezone.timedelta(minutes=30)
-        new_order_time = ((datetime_data + new_timedelta) if option == 'plus' else (datetime_data - new_timedelta))
 
-        end_time = (await WorkingHours.first()).end_time
-        if new_order_time >= order_datetime and \
-                new_order_time.time() <= (
-                timezone.datetime.strptime(str(end_time), '%H:%M:%S') - timezone.timedelta(hours=1)
-        ).time():
-            order_time = new_order_time.time()
+        now = timezone.now()
+
+        if datetime_data.time() < working_hours.start_time and date == now.date():
+            datetime_data += timezone.timedelta(days=1)
+
+        new_timedelta = timezone.timedelta(hours=1) if time_type == 'hour' else timezone.timedelta(minutes=30)
+        new_order_datetime = ((datetime_data + new_timedelta) if option == 'plus' else (datetime_data - new_timedelta))
+
+        end_datetime = await today_end_datetime(date)
+
+        if order_datetime <= new_order_datetime <= end_datetime:
+            order_time = new_order_datetime.time()
 
     time_types = {
         0: 'hour',

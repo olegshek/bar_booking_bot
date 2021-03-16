@@ -1,1 +1,1 @@
-[{"model": "bot.workinghours", "pk": 1, "fields": {"start_time": "13:00:00", "end_time": "22:50:00"}}]
+[{"model": "bot.workinghours", "pk": 1, "fields": {"start_time": "13:00:00", "end_time": "13:00:00"}}]

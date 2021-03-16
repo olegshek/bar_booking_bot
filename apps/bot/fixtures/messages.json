@@ -171,12 +171,42 @@
   },
   {
     "model": "bot.message",
-    "pk": 20,
+    "pk": 21,
     "fields": {
       "title": "feedback_choice",
-      "text": "Leave your review",
-      "text_ru": "Оставьте ваш отзыв",
-      "text_en": "Leave your review"
+      "text": "Желаете оставить отзыв?",
+      "text_ru": "Желаете оставить отзыв?",
+      "text_en": "Желаете оставить отзыв?"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 22,
+    "fields": {
+      "title": "book_notification",
+      "text": "Вы пришли или придете?",
+      "text_ru": "Вы пришли или придете?",
+      "text_en": "Вы пришли или придете?"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 23,
+    "fields": {
+      "title": "feedback_write",
+      "text": "Напишите отзыв",
+      "text_ru": "Напишите отзыв",
+      "text_en": "Напишите отзыв"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 24,
+    "fields": {
+      "title": "feedback_accepted",
+      "text": "Thank you for your feedback",
+      "text_ru": "Благодарим вас за отзыв",
+      "text_en": "Thank you for your feedback"
     }
   }
 ]

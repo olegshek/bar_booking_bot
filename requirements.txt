@@ -26,7 +26,6 @@ importlib-metadata==2.0.0
 iso8601==0.1.13
 kombu==4.6.11
 multidict==4.7.6
-pkg-resources==0.0.0
 prompt-toolkit==3.0.8
 psycopg2==2.8.6
 PyPika==0.42.1
