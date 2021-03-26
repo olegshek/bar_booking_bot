@@ -3,36 +3,39 @@ from django.utils import timezone
 from apps.bot.tortoise_models import WorkingHours
 
 
-async def today_end_datetime(date):
-    working_hours = await WorkingHours.first()
-
-    end_datetime = timezone.datetime.combine(
-        date,
-        working_hours.end_time
-    )
-
-    if end_datetime.time() < working_hours.start_time:
-        end_datetime += timezone.timedelta(days=1)
-
-    return end_datetime
-
-
-async def order_datetime(date):
+async def order_time(date):
     now = timezone.now().astimezone()
     working_hours = await WorkingHours.first()
-    end_datetime = await today_end_datetime(date)
+    book_time_datetime = (now + timezone.timedelta(hours=1)).replace(tzinfo=None)
+    book_time = book_time_datetime.time().replace(minute=0, second=0)
+    start_time = working_hours.start_time
+    end_time = working_hours.end_time
 
-    book_time_datetime = (now + timezone.timedelta(minutes=60)).replace(tzinfo=None)
-
-    res_datetime = book_time_datetime
-
-    if date == now.date() and book_time_datetime >= end_datetime:
-        res_datetime = end_datetime
+    start_datetime = timezone.datetime.combine(date, start_time)
+    end_datetime = timezone.datetime.combine(date, end_time)
 
     if date != now.date():
-        res_datetime = timezone.datetime.combine(
-            date,
-            working_hours.start_time
-        )
+        if end_time < start_time and (end_datetime - timezone.timedelta(hours=1)).date() != date:
+            return (end_datetime - timezone.timedelta(hours=1)).time().replace(minute=0, second=0)
 
-    return res_datetime
+        if start_time.minute:
+            start_time = (start_datetime + timezone.timedelta(hours=1)).time()
+            return start_time.replace(minute=0, second=0)
+
+    if end_time < start_time and (end_datetime - timezone.timedelta(hours=1)).date() == date:
+        return (end_datetime - timezone.timedelta(hours=1)).time().replace(minute=0, second=0)
+
+    if (end_datetime - timezone.timedelta(minutes=40)).time() < book_time < start_time:
+        book_time = start_time
+    else:
+        if book_time < start_time:
+            book_time = start_time
+
+        if book_time > end_time:
+            book_time = None
+
+    if book_time and book_time.minute:
+        book_time = (timezone.datetime.combine(date, book_time) + timezone.timedelta(hours=1)).time()
+        book_time = book_time.replace(minute=0, second=0, microsecond=0)
+
+    return book_time

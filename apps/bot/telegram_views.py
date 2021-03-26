@@ -1,12 +1,13 @@
 from aiogram import types
 from aiogram.types import ContentType
 from aiogram.utils.exceptions import TelegramAPIError
+from django.conf import settings
 from django.utils import timezone
 
 from apps.bot import dispatcher as dp, bot, keyboards, messages, telegram_calendar
-from apps.bot.callback_filters import message_is_not_start, keyboard_back, date_selection, time_processing, accept_time, \
-    data_is_digit, inline_back, feedback_choice, book_notification
-from apps.bot.keyboards import cancel_keyboard
+from apps.bot.callback_filters import message_is_not_start, keyboard_back, date_selection, accept_time, \
+    data_is_digit, inline_back, feedback_choice, book_notification, accept_book
+from apps.bot.messages import book_message
 from apps.bot.states import BotForm
 from apps.bot.telegram_calendar import separate_callback_data, create_calendar
 from apps.bot.tortoise_models import Button, SeatsManager, WorkingHours
@@ -51,6 +52,15 @@ async def back(user_id, state, locale, message_id=None):
         keyboard = await keyboards.time_choice(date, locale)
         await BotForm.book_time.set()
         await bot.edit_message_text(message, user_id, message_id, reply_markup=keyboard)
+
+    if state_name == BotForm.book_accept.state:
+        await BotForm.people_quantity.set()
+        await bot.edit_message_text(
+            await messages.get_message('people_quantity', locale),
+            user_id,
+            message_id,
+            reply_markup=await keyboards.people_quantity(locale)
+        )
 
 
 @dp.message_handler(keyboard_back, state='*')
@@ -137,14 +147,9 @@ async def process_date_selection(query, state, locale):
     for book_request in await BookRequest.filter(datetime__gte=timezone.now().date(), customer_id=user_id):
         if book_request.datetime.date() == date:
             local_datetime = book_request.datetime.astimezone()
-            message = (await messages.get_message('already_booked', locale)) % {
-                'book_id': book_request.book_id,
-                'date': str(local_datetime.date()),
-                'time': timezone.datetime.strftime(local_datetime, '%H:%M'),
-                'people_quantity': str(book_request.people_quantity)
-            }
-
+            message = await book_message('already_booked', locale, book_request, local_datetime)
             keyboard = await create_calendar(locale)
+
             try:
                 return await bot.edit_message_text(message, user_id, message_id, reply_markup=keyboard)
             except TelegramAPIError:
@@ -157,24 +162,6 @@ async def process_date_selection(query, state, locale):
     keyboard = await keyboards.time_choice(date, locale)
     await BotForm.book_time.set()
     await bot.edit_message_text(message, user_id, message_id, reply_markup=keyboard)
-
-
-@dp.callback_query_handler(time_processing, state=BotForm.book_time)
-async def time_choice_processing(query, locale, state):
-    user_id = query.from_user.id
-    message_id = query.message.message_id
-    option, time_type, time_data = query.data.split(';')
-    async with state.proxy() as data:
-        date = timezone.datetime.strptime(data['date'], '%Y-%m-%d').date()
-
-    try:
-        await bot.edit_message_reply_markup(
-            user_id,
-            message_id,
-            reply_markup=await keyboards.time_choice(date, locale, option, time_type, time_data)
-        )
-    except TelegramAPIError:
-        pass
 
 
 @dp.callback_query_handler(accept_time, state=BotForm.book_time)
@@ -204,20 +191,44 @@ async def people_quantity(query, state, locale):
     async with state.proxy() as data:
         date = data['date']
         time = data['time']
+        data['quantity'] = quantity
+
+    datetime_data = timezone.datetime.strptime(str(date) + str(time), "%Y-%m-%d%H:%M:%S")
+    next_datetime = datetime_data + timezone.timedelta(hours=1)
+
+    message = await messages.get_message('book_accept_required', locale) % {
+        'date': str(date),
+        'time': f"{time} - {timezone.datetime.strftime(next_datetime, '%H:%M')}",
+        'people_quantity': str(quantity)
+    }
+    keyboard = await keyboards.accept_keyboard(locale)
+
+    await BotForm.book_accept.set()
+
+    try:
+        await bot.edit_message_text(message, user_id, query.message.message_id, reply_markup=keyboard)
+    except TelegramAPIError:
+        pass
+
+
+@dp.callback_query_handler(accept_book, state=BotForm.book_accept)
+async def accept_book(query, state, locale):
+    user_id = query.from_user.id
+
+    async with state.proxy() as data:
+        date = data['date']
+        time = data['time']
+        quantity = data['quantity']
 
     free_seats = await (await SeatsManager.first()).get_free_seats(timezone.datetime.strptime(date, '%Y-%m-%d'))
-    is_confirmed = quantity <= free_seats
-    confirmed_at = timezone.now() if is_confirmed else None
+    is_valid = quantity <= free_seats
+    confirmed_at = timezone.now() if is_valid else None
 
-    if not is_confirmed:
+    if not is_valid:
         message = (await messages.get_message('no_seats', locale)) % {'seats': str(free_seats)}
         keyboard = await keyboards.people_quantity(locale)
     else:
-        working_hours = await WorkingHours.first()
         datetime_data = timezone.datetime.strptime(str(date) + str(time), "%Y-%m-%d%H:%M:%S")
-
-        if datetime_data.time() < working_hours.start_time:
-            datetime_data += timezone.timedelta(days=1)
 
         book_id = await _generate_book_id()
         book_request = await BookRequest.create(
@@ -227,20 +238,18 @@ async def people_quantity(query, state, locale):
             datetime=datetime_data,
             confirmed_at=confirmed_at
         )
-        message = (await messages.get_message('successful_booking', locale)) % {
-            'book_id': book_request.book_id,
-            'date': str(datetime_data.date()),
-            'time': timezone.datetime.strftime(datetime_data, '%H:%M'),
-            'people_quantity': str(book_request.people_quantity)
-        }
+
+        message = await book_message('successful_booking', locale, book_request, datetime_data)
         keyboard = None
+
+        await send_book_request_to_chanel(book_request)
 
     try:
         await bot.edit_message_text(message, user_id, query.message.message_id, reply_markup=keyboard)
     except TelegramAPIError:
         pass
 
-    if is_confirmed:
+    if is_valid:
         await state.finish()
         await BotForm.main_menu.set()
         keyboard = await keyboards.main_menu(locale)
@@ -308,3 +317,32 @@ async def notification_choice(query, locale):
         pass
 
     await registration_form(user_id, locale)
+
+
+async def send_book_request_to_chanel(book_request):
+    tomorrow_datetime = book_request.datetime + timezone.timedelta(days=1)
+
+    seats = 0
+
+    for book in await BookRequest.filter(
+        datetime__gte=book_request.datetime.date(),
+        datetime__lt=tomorrow_datetime.date()
+    ):
+        if book.datetime.date() == book_request.datetime.date():
+            seats += book.people_quantity
+
+    book_datetime = book_request.datetime
+    next_datetime = book_datetime + timezone.timedelta(hours=1)
+    customer = await book_request.customer
+
+    message = await messages.get_message('book_message', 'ru') % {
+        'book_id': str(book_request.book_id),
+        'customer_name': customer.full_name,
+        'date': str(book_datetime.date()),
+        'time': f"{book_datetime.time().strftime('%H:%M')} - {timezone.datetime.strftime(next_datetime, '%H:%M')}",
+        'people_quantity': str(book_request.people_quantity)
+    }
+    await bot.send_message(settings.CHANNEL_ID, message)
+
+    message = f"Количество занянтых мест на {book_datetime.date()}: {seats}"
+    await bot.send_message(settings.CHANNEL_ID, message)

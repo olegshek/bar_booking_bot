@@ -6,4 +6,5 @@ class BotForm(StatesGroup):
     people_quantity = State()
     book_date = State()
     book_time = State()
+    book_accept = State()
     feedback_write = State()

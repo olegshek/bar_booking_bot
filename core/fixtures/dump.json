@@ -1,87 +1,22 @@
 [
   {
-    "model": "bot.button",
-    "pk": 8,
+    "model": "bot.message",
+    "pk": 25,
     "fields": {
-      "name": "yes",
-      "text": "yes",
-      "text_ru": "ДА",
-      "text_en": "yes"
-    }
-  },
-  {
-    "model": "bot.button",
-    "pk": 9,
-    "fields": {
-      "name": "no",
-      "text": "no",
-      "text_ru": "НЕТ",
-      "text_en": "no"
-    }
-  },
-  {
-    "model": "bot.keyboard",
-    "pk": 4,
-    "fields": {
-      "name": "yes_or_no"
-    }
-  },
-  {
-    "model": "bot.keyboardbuttonsordering",
-    "pk": 6,
-    "fields": {
-      "keyboard": 4,
-      "button": 8,
-      "ordering": 0
-    }
-  },
-  {
-    "model": "bot.keyboardbuttonsordering",
-    "pk": 7,
-    "fields": {
-      "keyboard": 4,
-      "button": 9,
-      "ordering": 1
+      "title": "book_message",
+      "text": "ID: %(book_id)s\nИмя: %(customer_name)s\nДата: %(date)s\nВремя: %(time)s\nКоличество людей: %(people_quantity)s",
+      "text_ru": "ID: %(book_id)s\nИмя: %(customer_name)s\nДата: %(date)s\nВремя: %(time)s\nКоличество людей: %(people_quantity)s",
+      "text_en": "ID: %(book_id)s\nИмя: %(customer_name)s\nДата: %(date)s\nВремя: %(time)s\nКоличество людей: %(people_quantity)s"
     }
   },
   {
     "model": "bot.message",
-    "pk": 21,
+    "pk": 26,
     "fields": {
-      "title": "feedback_choice",
-      "text": "Желаете оставить отзыв?",
-      "text_ru": "Желаете оставить отзыв?",
-      "text_en": "Желаете оставить отзыв?"
-    }
-  },
-  {
-    "model": "bot.message",
-    "pk": 22,
-    "fields": {
-      "title": "book_notification",
-      "text": "Вы пришли или придете?",
-      "text_ru": "Вы пришли или придете?",
-      "text_en": "Вы пришли или придете?"
-    }
-  },
-  {
-    "model": "bot.message",
-    "pk": 23,
-    "fields": {
-      "title": "feedback_write",
-      "text": "Напишите отзыв",
-      "text_ru": "Напишите отзыв",
-      "text_en": "Напишите отзыв"
-    }
-  },
-  {
-    "model": "bot.message",
-    "pk": 24,
-    "fields": {
-      "title": "feedback_accepted",
-      "text": "Thank you for your feedback",
-      "text_ru": "Благодарим вас за отзыв",
-      "text_en": "Thank you for your feedback"
+      "title": "book_accept_required",
+      "text": "Подтвердите вашу заявку\n\nДата: %(date)s\nВремя: %(time)s\nКоличество людей: %(people_quantity)s",
+      "text_ru": "Подтвердите вашу заявку\n\nДата: %(date)s\nВремя: %(time)s\nКоличество людей: %(people_quantity)s",
+      "text_en": "Подтвердите вашу заявку\n\nДата: %(date)s\nВремя: %(time)s\nКоличество людей: %(people_quantity)s"
     }
   }
 ]

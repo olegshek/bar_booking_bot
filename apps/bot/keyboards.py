@@ -1,17 +1,22 @@
-import math
-
 from aiogram import types
 from django.utils import timezone
 
-from apps.bot import utils
 from apps.bot.tortoise_models import Button, KeyboardButtonsOrdering, WorkingHours
-from apps.bot.utils import today_end_datetime
 from apps.customer.tortoise_models import Gender
 
 checkout_emoji = {
     'PICKUP': '🏃‍♂️',
     'DELIVERY': '🚘'
 }
+
+
+def generate_time_button(date, book_time):
+    next_book_time = (timezone.datetime.combine(date, book_time) + timezone.timedelta(hours=1)).time()
+    button = types.InlineKeyboardButton(
+        f"{book_time.strftime('%H:%M')} - {next_book_time.strftime('%H:%M')}",
+        callback_data=f'time;{book_time}'
+    )
+    return next_book_time, button
 
 
 async def get_back_button_obj():
@@ -87,70 +92,118 @@ async def people_quantity(locale):
     return keyboard
 
 
-async def time_choice(date, locale, option=None, time_type=None, time_data=None):
-    keyboard = types.InlineKeyboardMarkup(row_width=2, resize_keyboard=True)
-    accept_button = await Button.get(name='accept')
+async def time_choice(date, locale):
+    now = timezone.now().astimezone()
+    now_time = now.time().replace(tzinfo=None)
+
+    keyboard = types.InlineKeyboardMarkup(row_width=1, resize_keyboard=True)
     back_button_obj = await get_back_button_obj()
 
-    order_datetime = await utils.order_datetime(date)
-    order_time = order_datetime.time()
+    working_hours = await WorkingHours.first()
+    start_time = working_hours.start_time
+    end_time = working_hours.end_time
+    end_datetime = timezone.datetime.combine(date, end_time)
 
-    if all([option, time_type, time_data]):
-        working_hours = await WorkingHours.first()
-        datetime_data = timezone.datetime.strptime(str(date) + str(time_data), "%Y-%m-%d%H:%M:%S")
+    last_book_time = (end_datetime - timezone.timedelta(hours=1)).time()
 
-        now = timezone.now()
+    buttons = []
 
-        if datetime_data.time() < working_hours.start_time and date == now.date():
-            datetime_data += timezone.timedelta(days=1)
+    if date != now.date():
+        if start_time > end_time and end_time.hour > 0:
+            book_time = now_time.replace(hour=0, minute=0, second=0, microsecond=0)
 
-        new_timedelta = timezone.timedelta(hours=1) if time_type == 'hour' else timezone.timedelta(minutes=30)
-        new_order_datetime = ((datetime_data + new_timedelta) if option == 'plus' else (datetime_data - new_timedelta))
+            while book_time <= last_book_time:
+                next_book_time, button = generate_time_button(date, book_time)
+                buttons.append(button)
+                book_time = next_book_time
 
-        end_datetime = await today_end_datetime(date)
+            book_time = start_time.replace(minute=0, second=0)
 
-        if order_datetime <= new_order_datetime <= end_datetime:
-            order_time = new_order_datetime.time()
+            while book_time.hour > 0:
+                next_book_time, button = generate_time_button(date, book_time)
+                buttons.append(button)
+                book_time = next_book_time
 
-    time_types = {
-        0: 'hour',
-        1: 'minute'
-    }
-    time_data_options = {
-        0: order_time.hour,
-        1: math.ceil(order_time.minute / 5) * 5
-    }
+        else:
+            book_time = start_time.replace(minute=0, second=0)
 
-    if time_data_options[1] > 59:
-        time_data_options[0] += 1
-        time_data_options[1] = 0
+            zero_exists = False
+            while book_time <= last_book_time:
+                if book_time.hour == 0 and zero_exists:
+                    break
 
-    order_time = timezone.datetime.strptime(f'{time_data_options[0]}:{time_data_options[1]}', '%H:%M').time()
-    plus_buttons = []
-    minus_buttons = []
-    time_buttons = []
+                next_book_time, button = generate_time_button(date, book_time)
+                buttons.append(button)
+                book_time = next_book_time
 
-    for i in range(2):
-        plus_buttons.append(
-            types.InlineKeyboardButton('+', callback_data=f'plus;{time_types[i]};{order_time}')
-        )
-        minus_buttons.append(
-            types.InlineKeyboardButton('-', callback_data=f'minus;{time_types[i]};{order_time}')
-        )
-        time_buttons.append(types.InlineKeyboardButton(str(time_data_options[i]), callback_data='ignore'))
+                if book_time.hour == 0:
+                    zero_exists = True
 
-    keyboard.add(*plus_buttons)
-    keyboard.add(*time_buttons)
-    keyboard.add(*minus_buttons)
+    else:
+        if start_time > end_time and end_time.hour > 0:
+            if now_time < start_time or now_time <= last_book_time:
+                book_time = (
+                        timezone.datetime.combine(date, now_time) +
+                        timezone.timedelta(hours=1)
+                ).replace(minute=0, second=0, microsecond=0).time()
 
-    keyboard.add(types.InlineKeyboardButton(
-        getattr(accept_button, f'text_{locale}'),
-        callback_data=f'{accept_button.name};{order_time}'
-    ))
+                while book_time <= last_book_time:
+                    next_book_time, button = generate_time_button(date, book_time)
+                    buttons.append(button)
+                    book_time = next_book_time
+
+                book_time = start_time.replace(minute=0, second=0)
+
+                while book_time.hour > 0:
+                    next_book_time, button = generate_time_button(date, book_time)
+                    buttons.append(button)
+                    book_time = next_book_time
+
+            else:
+                book_time = (
+                        timezone.datetime.combine(date, now_time) +
+                        timezone.timedelta(hours=1)
+                ).replace(minute=0, second=0, microsecond=0).time()
+
+                while book_time <= last_book_time:
+                    next_book_time, button = generate_time_button(date, book_time)
+                    buttons.append(button)
+                    book_time = next_book_time
+
+        else:
+            book_time = now_time.replace(minute=0, second=0, microsecond=0) if now_time > start_time else start_time
+            zero_exists = False
+            while book_time <= last_book_time:
+                if book_time.hour == 0 and zero_exists:
+                    break
+
+                next_book_time, button = generate_time_button(date, book_time)
+                buttons.append(button)
+                book_time = next_book_time
+
+                if book_time.hour == 0:
+                    zero_exists = True
+
+    keyboard.add(*buttons)
+
     keyboard.add(types.InlineKeyboardButton(
         getattr(back_button_obj, f'text_{locale}'),
         callback_data=back_button_obj.name)
     )
+    return keyboard
+
+
+async def accept_keyboard(locale):
+    keyboard = types.InlineKeyboardMarkup(row_width=1, resize_keyboard=True)
+    back_button_obj = await get_back_button_obj()
+    accept_button = await Button.get(name='accept')
+
+    keyboard.add(types.InlineKeyboardButton(getattr(accept_button, f'text_{locale}'), callback_data=accept_button.name))
+    keyboard.add(types.InlineKeyboardButton(
+        getattr(back_button_obj, f'text_{locale}'),
+        callback_data=back_button_obj.name)
+    )
+
     return keyboard
 
 

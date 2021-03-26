@@ -31,12 +31,12 @@ async def date_selection(query):
     return 'DAY' in query.data
 
 
-async def time_processing(query):
-    return 'plus' in query.data or 'minus' in query.data
-
-
 async def accept_time(query):
-    return 'accept' in query.data or 'certain_time' in query.data
+    return 'time' in query.data
+
+
+async def accept_book(query):
+    return 'accept' in query.data
 
 
 async def yes_or_no_validation(query, action_name):
