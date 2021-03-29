@@ -165,7 +165,7 @@ async def time_choice(date, locale):
                         timezone.timedelta(hours=1)
                 ).replace(minute=0, second=0, microsecond=0).time()
 
-                while book_time <= last_book_time:
+                while book_time.hour > 0:
                     next_book_time, button = generate_time_button(date, book_time)
                     buttons.append(button)
                     book_time = next_book_time
