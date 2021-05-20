@@ -50,24 +50,24 @@ def send_feedback():
             pass
 
 
-@periodic_task(run_every=crontab(minute='*/5'), name='send_book_request_notifications', ignore_result=True)
-def send_book_request_notifications():
-    now = timezone.now().astimezone().replace(tzinfo=None)
-    for request in BookRequest.objects.filter(
-            datetime__lte=now,
-            datetime__gte=now - timezone.timedelta(minutes=5),
-            confirmed_at__isnull=False,
-            notified_at__isnull=True
-    ):
-        try:
-            customer = request.customer
-            locale = customer.language
-            text = getattr(Message.objects.get(title='book_notification'), f'text_{locale}')
-
-            bot.send_message(customer.id, text, reply_markup=book_notification(request.id, locale))
-
-            request.notified_at = timezone.now()
-            request.save()
-
-        except ApiException:
-            continue
+# @periodic_task(run_every=crontab(minute='*/5'), name='send_book_request_notifications', ignore_result=True)
+# def send_book_request_notifications():
+#     now = timezone.now().astimezone().replace(tzinfo=None)
+#     for request in BookRequest.objects.filter(
+#             datetime__lte=now,
+#             datetime__gte=now - timezone.timedelta(minutes=5),
+#             confirmed_at__isnull=False,
+#             notified_at__isnull=True
+#     ):
+#         try:
+#             customer = request.customer
+#             locale = customer.language
+#             text = getattr(Message.objects.get(title='book_notification'), f'text_{locale}')
+#
+#             bot.send_message(customer.id, text, reply_markup=book_notification(request.id, locale))
+#
+#             request.notified_at = timezone.now()
+#             request.save()
+#
+#         except ApiException:
+#             continue
